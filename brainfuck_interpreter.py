@@ -156,26 +156,30 @@ class BrainfuckInterpreter:
 def main():
     """
     Main function to run the Brainfuck interpreter from command line.
+
+    Usage:
+        python brainfuck_interpreter.py <brainfuck_file> [input_string]
+        python brainfuck_interpreter.py - [input_string]        # read code from stdin
+        echo '<code>' | python brainfuck_interpreter.py [input_string]
     """
     if len(sys.argv) < 2:
-        print("Usage: python brainfuck_interpreter.py <brainfuck_file> [input_string]")
-        print("\nExample Brainfuck programs:")
-        print("Hello World: ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.")
-        print("Cat program: ,[.,]")
-        return
-        
-    filename = sys.argv[1]
+        code = sys.stdin.read()
+    else:
+        filename = sys.argv[1]
+        if filename == "-":
+            code = sys.stdin.read()
+        else:
+            try:
+                with open(filename, 'r') as file:
+                    code = file.read()
+            except FileNotFoundError:
+                print(f"Error: File '{filename}' not found.", file=sys.stderr)
+                sys.exit(1)
+            except Exception as e:
+                print(f"Error reading file: {e}", file=sys.stderr)
+                sys.exit(1)
+
     input_string = sys.argv[2] if len(sys.argv) > 2 else ""
-    
-    try:
-        with open(filename, 'r') as file:
-            code = file.read()
-    except FileNotFoundError:
-        print(f"Error: File '{filename}' not found.")
-        return
-    except Exception as e:
-        print(f"Error reading file: {e}")
-        return
         
     interpreter = BrainfuckInterpreter()
     
@@ -188,4 +192,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
